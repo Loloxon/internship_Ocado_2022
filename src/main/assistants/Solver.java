@@ -21,6 +21,9 @@ public class Solver {
     private float[][] distancesFromStart; //without picking
     private float[][] distancesFromEnd; //without picking
 
+    private ArrayList<Cords> path;
+    private float bestTime;
+
     public Solver(Grid grid){
         this.grid = grid;
         this.X = grid.getX();
@@ -39,9 +42,10 @@ public class Solver {
         setEnd(end);
         setProductName(productName);
     }
+    public ArrayList<Cords> getPath() {return path;}
+    public float getBestTime() {return bestTime;}
 
-
-    public ArrayList<Cords> generatePath(Cords[][] prevFromStart, Cords product, Cords[][] prevFromEnd){
+    private void generatePath(Cords[][] prevFromStart, Cords product, Cords[][] prevFromEnd){
         ArrayList<Cords> tmp = new ArrayList<>();
         int x=product.x, y=product.y;
         while(prevFromStart[y][x].x!=-1){
@@ -51,7 +55,7 @@ public class Solver {
             x=tmpX;
         }
         Collections.reverse(tmp);
-        ArrayList<Cords> path = new ArrayList<>(tmp);
+        path = new ArrayList<>(tmp);
 
         path.add(product);
 
@@ -65,8 +69,25 @@ public class Solver {
             x=tmpX;
         }
         path.addAll(tmp);
-
-        return path;
+    }
+    public void printOutput(){
+        System.out.println(path.size()-1);
+        System.out.println(bestTime);
+        for (Cords cords : path) {
+            System.out.println(cords.toString());
+        }
+    }
+    public String getOutput(){
+        StringBuilder S = new StringBuilder();
+        S.append(path.size() - 1);
+        S.append("\n");
+        S.append(bestTime);
+        S.append("\n");
+        for (Cords cords : path) {
+            S.append(cords.toString());
+            S.append("\n");
+        }
+        return S.toString();
     }
     public void calculateTime() {
         Cords[][] prevFromStart;
@@ -78,7 +99,7 @@ public class Solver {
         tmp = dijkstra(distancesFromEnd, end);
         distancesFromEnd = tmp.first();
         prevFromEnd = tmp.second();
-        float bestTime = -1;
+        bestTime = -1;
         int bestProduct = -1;
         ArrayList<Product> products = grid.getProducts();
         for(int i=0;i<products.size();i++){
@@ -92,15 +113,9 @@ public class Solver {
                 }
             }
         }
-        ArrayList<Cords> path = generatePath(prevFromStart, products.get(bestProduct).getCords(), prevFromEnd);
-
-        System.out.println(path.size()-1);
-        System.out.println(bestTime);
-        for (Cords cords : path) {
-            System.out.println(cords.toString());
-        }
+        generatePath(prevFromStart, products.get(bestProduct).getCords(), prevFromEnd);
     }
-    public Pair<float[][],Cords[][]> dijkstra(float[][] distances, Cords source) {
+    private Pair<float[][],Cords[][]> dijkstra(float[][] distances, Cords source) {
         Cords[][] prev = new Cords[Y][X];
         PriorityQueue<Pair<Float, Cords>> Q = new PriorityQueue<>((a, b) -> (int)(a.first() - b.first()));
         int maxDist = X * Y * 2 + 5;

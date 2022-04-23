@@ -7,7 +7,7 @@ import static org.testng.AssertJUnit.assertEquals;
 
 public class JobParserTest {
     @Test
-    public void GridParserTest(){
+    public void JobParserTest(){
         JobParser jobParser = new JobParser("job-1.txt");
 
         assertEquals(1, jobParser.getStart().x);

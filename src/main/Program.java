@@ -16,5 +16,6 @@ public class Program {
         solver.setData(jobParser.getStart(), jobParser.getEnd(), jobParser.getName());
 
         solver.calculateTime();
+        solver.printOutput();
     }
 }
