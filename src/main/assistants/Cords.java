@@ -1,4 +1,4 @@
-package main.objects;
+package main.assistants;
 
 public class Cords {
     public final int x;

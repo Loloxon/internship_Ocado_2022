@@ -1,5 +1,7 @@
 package main.objects;
 
+import main.assistants.Cords;
+
 public class Product{
     private final String name;
     private final int x;

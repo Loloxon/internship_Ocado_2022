@@ -47,23 +47,14 @@ public class GridParser {
             System.exit(3);
         }
     }
-
-    public int getX() {
-        return X;
-    }
-
+    public int getX() {return X;}
     public int getY() {
         return Y;
     }
-
     public int getN() {
         return N;
     }
-
-    public Module[][] getGrid() {
-        return grid;
-    }
-
+    public Module[][] getGrid() {return grid;}
     public ArrayList<Product> getProducts() {
         return products;
     }

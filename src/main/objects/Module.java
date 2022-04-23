@@ -40,7 +40,12 @@ public class Module {
             }
         }
     }
+
+    public float getMoveTime() {return moveTime;}
+    public int getPickTimeFlat() {return pickTimeFlat;}
+    public int getPickTimeMultiplayer() {return pickTimeMultiplayer;}
     public char getType(){return type;}
+    
     public boolean canMoveTo(){
         return moveTime>0;
     }

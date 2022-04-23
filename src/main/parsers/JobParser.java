@@ -1,6 +1,6 @@
 package main.parsers;
 
-import main.objects.Cords;
+import main.assistants.Cords;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,15 +30,12 @@ public class JobParser {
             System.exit(4);
         }
     }
-
     public Cords getStart() {
         return start;
     }
-
     public Cords getEnd() {
         return end;
     }
-
     public String getName() {
         return name;
     }
