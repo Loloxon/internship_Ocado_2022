@@ -1,4 +1,4 @@
-package main.objects;
+package main.structures;
 
 import main.assistants.Cords;
 

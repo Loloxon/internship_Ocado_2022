@@ -1,8 +1,8 @@
 package main.assistants;
 
-import main.objects.Grid;
-import main.objects.Module;
-import main.objects.Product;
+import main.structures.Grid;
+import main.structures.Module;
+import main.structures.Product;
 import org.testng.internal.collections.Pair;
 
 import java.util.ArrayList;
@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 
 public class Solver {
+    int maxDistance;
+    
     private Cords start;
     private Cords end;
     private String productName;
@@ -30,6 +32,8 @@ public class Solver {
         this.Y = grid.getY();
         distancesFromStart = new float[Y][X];
         distancesFromEnd = new float[Y][X];
+
+        maxDistance = X * Y * 4 + 5;
     }
     public Cords getStart() {return start;}
     public void setStart(Cords start) {this.start = start;}
@@ -38,37 +42,41 @@ public class Solver {
     public String getProductName() {return productName;}
     public void setProductName(String productName) {this.productName = productName;}
     public void setData(Cords start, Cords end, String productName){
+        if(start.x<0 || start.y>=Y){
+            System.err.println("Invalid start position");
+            System.exit(10);
+        }
+        if(end.x<0 || end.y>=Y){
+            System.err.println("Invalid end position");
+            System.exit(11);
+        }
+        boolean productExists = false;
+        for(Product p: grid.getProducts()){
+            if(Objects.equals(p.getName(), productName))
+                productExists = true;
+        }
+        if(!productExists){
+            System.err.println("There is no demanded product");
+            System.exit(98);
+        }
         setStart(start);
         setEnd(end);
         setProductName(productName);
     }
     public ArrayList<Cords> getPath() {return path;}
     public float getBestTime() {return bestTime;}
-
-    private void generatePath(Cords[][] prevFromStart, Cords product, Cords[][] prevFromEnd){
-        ArrayList<Cords> tmp = new ArrayList<>();
-        int x=product.x, y=product.y;
-        while(prevFromStart[y][x].x!=-1){
-            tmp.add(prevFromStart[y][x]);
-            int tmpX = prevFromStart[y][x].x;
-            y = prevFromStart[y][x].y;
-            x=tmpX;
+    public String getOutput(){
+        StringBuilder S = new StringBuilder();
+        S.append(path.size() - 1);
+        S.append("\n");
+        S.append(bestTime);
+        S.append("\n");
+        for (int i=0;i<path.size();i++) {
+            S.append(path.get(i).toString());
+            if(i<path.size()-1)
+                S.append("\n");
         }
-        Collections.reverse(tmp);
-        path = new ArrayList<>(tmp);
-
-        path.add(product);
-
-        tmp.clear();
-        x=product.x;
-        y=product.y;
-        while(prevFromEnd[y][x].x!=-1){
-            tmp.add(prevFromEnd[y][x]);
-            int tmpX = prevFromEnd[y][x].x;
-            y = prevFromEnd[y][x].y;
-            x=tmpX;
-        }
-        path.addAll(tmp);
+        return S.toString();
     }
     public void printOutput(){
         System.out.println(path.size()-1);
@@ -77,19 +85,7 @@ public class Solver {
             System.out.println(cords.toString());
         }
     }
-    public String getOutput(){
-        StringBuilder S = new StringBuilder();
-        S.append(path.size() - 1);
-        S.append("\n");
-        S.append(bestTime);
-        S.append("\n");
-        for (Cords cords : path) {
-            S.append(cords.toString());
-            S.append("\n");
-        }
-        return S.toString();
-    }
-    public void calculateTime() {
+    public void calculate() {
         Cords[][] prevFromStart;
         Cords[][] prevFromEnd;
         Pair<float[][],Cords[][]> tmp;
@@ -105,23 +101,28 @@ public class Solver {
         for(int i=0;i<products.size();i++){
             if(Objects.equals(productName, products.get(i).getName())) {
                 Cords p = products.get(i).getCords();
-                float currBestTime = distancesFromStart[p.y][p.x] + distancesFromEnd[p.y][p.x] +
-                        grid.at(p).timeOfPick(products.get(i).getLayer());
-                if (bestTime == -1 || currBestTime < bestTime) {
-                    bestTime = currBestTime;
-                    bestProduct = i;
+                if(distancesFromStart[p.y][p.x]<maxDistance && distancesFromEnd[p.y][p.x]<maxDistance) {
+                    float currBestTime = distancesFromStart[p.y][p.x] + distancesFromEnd[p.y][p.x] +
+                            grid.at(p).timeOfPick(products.get(i).getLayer());
+                    if (bestTime == -1 || currBestTime < bestTime) {
+                        bestTime = currBestTime;
+                        bestProduct = i;
+                    }
                 }
             }
+        }
+        if(bestTime==-1){
+            System.err.println("Can't reach or deliver demanded product");
+            System.exit(99);
         }
         generatePath(prevFromStart, products.get(bestProduct).getCords(), prevFromEnd);
     }
     private Pair<float[][],Cords[][]> dijkstra(float[][] distances, Cords source) {
         Cords[][] prev = new Cords[Y][X];
         PriorityQueue<Pair<Float, Cords>> Q = new PriorityQueue<>((a, b) -> (int)(a.first() - b.first()));
-        int maxDist = X * Y * 2 + 5;
         for(int i=0;i<X;i++){
             for(int j=0;j<Y;j++){
-                distances[j][i] = maxDist;
+                distances[j][i] = maxDistance;
             }
         }
         prev[source.y][source.x] = new Cords(-1,-1);
@@ -148,4 +149,32 @@ public class Solver {
         }
         return new Pair<>(distances,prev);
     }
+    private void generatePath(Cords[][] prevFromStart, Cords product, Cords[][] prevFromEnd){
+        ArrayList<Cords> tmp = new ArrayList<>();
+        int x=product.x, y=product.y;
+        while(prevFromStart[y][x].x!=-1){
+            tmp.add(prevFromStart[y][x]);
+            int tmpX = prevFromStart[y][x].x;
+            y = prevFromStart[y][x].y;
+            x=tmpX;
+        }
+        Collections.reverse(tmp);
+        path = new ArrayList<>(tmp);
+
+        path.add(product);
+
+        tmp.clear();
+        x=product.x;
+        y=product.y;
+        while(prevFromEnd[y][x].x!=-1){
+            tmp.add(prevFromEnd[y][x]);
+            int tmpX = prevFromEnd[y][x].x;
+            y = prevFromEnd[y][x].y;
+            x=tmpX;
+        }
+        path.addAll(tmp);
+    }
+
+
+
 }

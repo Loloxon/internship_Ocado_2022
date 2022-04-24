@@ -1,7 +1,7 @@
 package main;
 
 import main.assistants.Solver;
-import main.objects.Grid;
+import main.structures.Grid;
 import main.parsers.GridParser;
 import main.parsers.JobParser;
 
@@ -15,7 +15,7 @@ public class Program {
         Solver solver = new Solver(grid);
         solver.setData(jobParser.getStart(), jobParser.getEnd(), jobParser.getName());
 
-        solver.calculateTime();
+        solver.calculate();
         solver.printOutput();
     }
 }

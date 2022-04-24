@@ -1,7 +1,7 @@
 package main.parsers;
 
-import main.objects.Module;
-import main.objects.Product;
+import main.structures.Module;
+import main.structures.Product;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,6 +36,13 @@ public class GridParser {
                 }
                 else{
                     String[] product = input.split(" ");
+
+                    if(     Integer.parseInt(product[1])<0 || Integer.parseInt(product[1])>=X ||
+                            Integer.parseInt(product[2])<0 || Integer.parseInt(product[2])>=Y ||
+                            Integer.parseInt(product[3])<0 || Integer.parseInt(product[3])>=N){
+                        System.err.println("Product is outside of the grid");
+                        System.exit(5);
+                    }
                     products.add(new Product(product[0], Integer.parseInt(product[1]),
                             Integer.parseInt(product[2]), Integer.parseInt(product[3])));
                 }
@@ -43,7 +50,7 @@ public class GridParser {
             }
         }
         catch (FileNotFoundException e) {
-            System.err.println(" 'Grid' file does not exist");
+            System.err.println("'Grid' file does not exist");
             System.exit(3);
         }
     }
