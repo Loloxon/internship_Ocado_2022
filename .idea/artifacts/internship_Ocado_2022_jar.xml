@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="Internships:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Internships_jar</output-path>
-    <root id="archive" name="Internships.jar">
+  <artifact type="jar" name="internship_Ocado_2022:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/internship_Ocado_2022_jar</output-path>
+    <root id="archive" name="internship_Ocado_2022.jar">
       <element id="module-output" name="internship_Ocado_2022" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/testng/testng/7.1.0/testng-7.1.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/beust/jcommander/1.72/jcommander-1.72.jar" path-in-jar="/" />
